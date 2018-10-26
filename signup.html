@@ -76,6 +76,9 @@
                                   <h3>Account Address</h3>
                                   <input type="text" name="account_add" id="account_add" placeholder="Account address">
                                   <span class="error" id="address_error"></span>
+                                  <input type="password" name="password" id="password" placeholder="Password">
+                                  <input type="password" name="password2" id="password2" placeholder="Confirm Password">
+                                  <span class="error" id="password_error"></span>
                                   <div class="button">Next</div>
                                 </fieldset>
                                 <fieldset class="section">
@@ -84,14 +87,13 @@
                                   <span class="error" id="name_error"></span>
                                   <input type="email" name="email" id="email" placeholder="Email">
                                   <span class="error" id="email_error"></span>
-                                  <input type="password" name="password" id="password" placeholder="Password">
-                                  <input type="password" name="password2" id="password2" placeholder="Confirm Password">
-                                  <span class="error" id="password_error"></span>
                                   <input type="text" name="address" id="address" placeholder="Permanent Address">
                                   <input type="date" name="dob" id="dob" placeholder="Date of Birth">
                                   <div><input type="text" name="fingerprint" id="fingerprint" placeholder="Scan Fingerprint">
                                   <input type="text" name="phone" id="phone" placeholder="Mobile Number">
                                   <span class="error" id="phone_error"></span>
+                                  <input type="text" name="country" id="country" placeholder="Country">
+                                  <span class="error" id="country_error"></span>
                                   <input class="submit button" type="submit" value="Sign Up">
                                 </fieldset>
                                 <fieldset class="section">
@@ -165,7 +167,7 @@
 
   <script src="public/js/scripts.min.js"></script>
   <script src="public/js/main.min.js"></script>
-  <script src="public/js/custom.js"></script>
+  <script src="public/js/signup.js"></script>
 
   </body>
 </html>

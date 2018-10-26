@@ -8,12 +8,14 @@ $(document).ready(function(){
         $('#email_error').hide();
         $('#phone_error').hide();
         $('#password_error').hide();
+        $('#country_error').hide();
         
         var address_error = false;
         var name_error = false;
         var email_error = false;
         var phone_error = false;
         var password_error = false;
+        var country_error = false;
         $('#name').focusout(function(){
         	check_name();
         });
@@ -26,10 +28,13 @@ $(document).ready(function(){
         $('#password, #password2').focusout(function(){
             check_password();
         });
+        $('#country_error').focusout(function(){
+            check_country();
+        });
 
         function check_name() {
         	var name = $('#name').val();
-        	name.trim();
+        	//name.trim();
         	if(name!='') {
         		$('#name_error').hide();
         	}
@@ -78,13 +83,28 @@ $(document).ready(function(){
             }
             
         }
+        function check_country() {
+            var country = $('#country').val();
+            var temp=country.trim();
+            if(temp!='') {
+                $('#country_error').hide();
+            }
+            else {
+                $('#country_error').html("Enter country name");
+                $('#country_error').show();
+                country_error=true;
+            }
+        }
 
         /*
         	Validation ends...
         */
 
 
-  $(".form-wrapper .button").click(function(){
+  $(".form-wrapper .button").click(function(e){
+    
+    e.preventDefault();
+                    
     var button = $(this);
     var currentSection = button.parents(".section");
     var currentSectionIndex = currentSection.index();
@@ -138,9 +158,7 @@ $(document).ready(function(){
 				    currentSection.removeClass("is-active").next().addClass("is-active");
 				    headerSection.removeClass("is-active").next().addClass("is-active");
 
-				    $(".form-wrapper").submit(function(e) {
-				      e.preventDefault();
-				    });
+				    
 
 				    if(currentSectionIndex === 2){
 				      $(document).find(".form-wrapper .section").first().addClass("is-active");
@@ -154,10 +172,7 @@ $(document).ready(function(){
 		    currentSection.removeClass("is-active").next().addClass("is-active");
 		    headerSection.removeClass("is-active").next().addClass("is-active");
 
-		    $(".form-wrapper").submit(function(e) {
-		      e.preventDefault();
-		    });
-
+		    
 		    if(currentSectionIndex === 2) {
 		      $(document).find(".form-wrapper .section").first().addClass("is-active");
 		      $(document).find(".steps li").first().addClass("is-active");
@@ -170,16 +185,18 @@ $(document).ready(function(){
 		    		check_email();
 		    		check_password();
 		    		check_phone();
-		    		if(!name_error & !email_error && !password_error && !phone_error) {
+                    check_country();
+		    		if(!name_error & !email_error && !password_error && !phone_error && !country_error) {
 		    			var account_add = $('#account_add').val();
 		    			var name  = $('#name').val();
 		    			var email = $('#email').val();
 		    			var password = $('#password').val();
-		    			var phone = $('phone').val();
+		    			var phone = $('#phone').val();
+                        var country = $('#country').val();
 		    			$.ajax({
 		    				type:'POST',
 		    				url: '',
-		    				data: {account_add: account_add, name: name, email: email, password: password,phone: phone},
+		    				data: {account_add: account_add, name: name, email: email, password: password,phone: phone,country: country},
 		    				success: function() {
 		    					alert("Values sent!");
 		    				},
