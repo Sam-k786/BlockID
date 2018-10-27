@@ -1,7 +1,7 @@
 $(document).ready(function(){
   if (typeof web3 !== 'undefined') {
     // Use Mist/MetaMask's provider
-    web3js = new Web3(web3.currentProvider);
+    web3 = new Web3(web3.currentProvider);
   } else {
     console.log('No web3? You should consider trying MetaMask!')
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
@@ -19,7 +19,7 @@ $(document).ready(function(){
     let country = $("#country").val();
     let name = $("#name").val();
     let dob = $("#dob").val();
-  
+
     let msgParams = [
       {
         type: 'bytes32',      // Any valid solidity type
@@ -27,15 +27,15 @@ $(document).ready(function(){
         value: password
       }
     ]
-  
+
     var from = $("#address").val();
-  
+
     var params = [msgParams, from]
     var method = 'eth_signTypedData'
-  
+
     //console.log("Hash is ");
     //console.log(sigUtil.typedSignatureHash(msgParams));
-  
+
     web3.currentProvider.sendAsync({
       method,
       params,
@@ -43,7 +43,7 @@ $(document).ready(function(){
     }, function (err, result) {
       if (err) return console.error(err)
       if (result.error) return console.error(result.error)
-    
+
 
       var finalResult = {
         signature : result.result,
@@ -53,19 +53,16 @@ $(document).ready(function(){
         email:email,
         phone:phone,
         perAddr:perAddr,
-      country:country,
+        country:country,
         name:name,
-        dob:dob
+        dob:dob,
+        msgParams:msgParams
 
       };
-    //  var signaturePost =  $.post( "/getData",{signature : result.result,from : from } );
-    //  signaturePost.done(function(data){
-    //    console.log("success");
-    //    console.log(data);
-    //  })
+
      $.ajax({
        type:"POST",
-       url:"http://localhost:8005/getData",
+       url:"http://localhost:8000/getData",
        data:finalResult,
        success: function(data){
           console.log("ppppp");

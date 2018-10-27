@@ -13,19 +13,19 @@ var cors = require('cors');
 
 app.use(cors());
 
-//static files 
+//static files
 
 app.use('/public', express.static('public'));
 
 //contract declaration
-web3.eth.defaultAccount = '0x514e011e0Ce512c06E23E192A0469f448b0F52ce';
-var privKey = "3D6A8A4B7B59F3EFC165B58B8AD9004DF7828F81B793E44601DB08AFAB83405E";
+web3.eth.defaultAccount = '0x8d94f5549ec081d77acfae6a0b42692fed75d52f';
+var privKey = "5D511D4051388235C03AA1D49A847A91269864EAFFFE753FFC0ACD7F685C75C9";
 var abi = JSON.parse(fs.readFileSync('./UserAbi.json'));
-var address = '0xec5c6F39979fA319Fb76C0b8643324A7c9Ccd125';
+var address = '0xeea4d4a04d2c01d0402151538e0300753298ceb4';
 //var UserProfileContract =new web3.eth.Contract(abi,contractAddress);
 //console.log(UserProfileContract);
 
-//Currently using this random Username. 
+//Currently using this random Username.
 //But actually we will have to retrieve the account username from the front end.
 //var userAddress = '0x87eE894DEE0c8e936a7B15158F3f14E2d11316D1';
 
@@ -45,19 +45,33 @@ app.post("/getData",function(req,res){
      //inserting value in the contract;
      var userAddress = req.body.address;
      var bod = req.body;
-     var hashedPassword = sigUtil.typedSignatureHash([{ type: 'string', name: 'Message', value: bod.password}]);
-     var password = Buffer.from(hashedPassword,'hex');
-     var fingerprint = Buffer.from(bod.fingerprint,'hex');
-     var email = Buffer.from(bod.email,'hex');
-     var phone = Buffer.from(bod.phone,'hex');
-     var perAddr = Buffer.from(bod.perAddr,'hex');
-     var country = Buffer.from(bod.country,'hex')
-     var name = Buffer.from(bod.name,'hex')
-     var dob = Buffer.from(bod.dob,'hex');
-    //  res.header('Access-Control-Allow-Origin', '*');
-    //  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    //  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    
+     //var hashedPassword = web3.utils.keccak256("\x19Ethereum Signed Message:\n5"+ bod.password);
+     //var password =web3.utils.fromAscii(bod.password);
+     let msgParams = [
+        {
+          type: 'bytes32',      // Any valid solidity type
+          name: 'Message',     // Any string label you want
+          value: bod.password
+        }
+      ]
+     var password =  sigUtil.typedSignatureHash(msgParams);
+     var fingerprint = web3.utils.fromAscii(bod.fingerprint);
+     var email = web3.utils.fromAscii(bod.email);;
+     var phone = web3.utils.fromAscii(bod.phone);
+     var perAddr = web3.utils.fromAscii(bod.perAddr);
+     var country = web3.utils.fromAscii(bod.country);
+     var name = web3.utils.fromAscii(bod.name);
+     var dob = web3.utils.fromAscii(bod.dob);
+
+     console.log(password,fingerprint,email,phone,perAddr,country,name,dob,bod.signature);
+
+
+
+    //console.log(sigUtil.typedSignatureHash(msgParams));
+    //console.log(sigUtil.recoverTypedSignature({ data: msgParams, sig: bod.signature }));
+
+
+
         web3.eth.getTransactionCount(web3.eth.defaultAccount,(err,nonce) => {
             if(err){
                 console.log("err0:"+err);
@@ -71,8 +85,8 @@ app.post("/getData",function(req,res){
             const functionAbi = contract.methods.setUserData(userAddress,password,fingerprint,email,phone,perAddr,country,name,dob).encodeABI();
             var details = {
                 "nonce": nonce,
-                "gasPrice": web3.utils.toHex(web3.utils.toWei('47', 'gwei')),
-                "gas": 300000,
+                "gasPrice": web3.utils.toHex(web3.utils.toWei('70', 'gwei')),
+                "gas": 3000000,
                 "to": address,
                 "value": 0,
                 "data": functionAbi,
@@ -86,26 +100,33 @@ app.post("/getData",function(req,res){
                     res.status(500).send(err);
                 }
                 console.log("txhash",txHash);
-                res.status(200).send(txHash);
+
+            }).on('receipt', function(receipt){
+                console.log(receipt);
+
+
+                res.status(200).send(receipt);
+                contract.methods.getUserData(userAddress,bod.signature).call({from:web3.eth.defaultAccount},function(err,result){
+                    if(err){
+                        console.log(err);
+                    }
+                    console.log(result);
+
+
+
+                });
+
             });
         });
-        
-        
-    
+        //creating contract object for getting details
+        /*const contract = new web3.eth.Contract(abi,address, {
+            from: web3.eth.defaultAccount ,
+                gas: 3000000,
+        });*/
 
-    /*UserProfileContract.methods.getUserData(userAddress).call({from:userAddress},function(err,result){
-    if(err){
-        console.log(err);
-        }
-    //0-Name, 1-DOB, 2-Email, 3-Email, 4-Username, 5-Password
-        console.log(result);
-    });*/
 
 });
 
-app.listen(8005,function(){
+app.listen(8000,function(){
     console.log("Server running on the port 8000");
 });
-
-
-

@@ -1,28 +1,5 @@
 [
 	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "addr",
-				"type": "address"
-			},
-			{
-				"name": "signature",
-				"type": "bytes"
-			}
-		],
-		"name": "getUserData",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bytes32[8]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"constant": false,
 		"inputs": [
 			{
@@ -73,5 +50,71 @@
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "constructor"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "addr",
+				"type": "address"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "getFingerprint",
+		"outputs": [
+			{
+				"name": "fingerprint",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "addr",
+				"type": "address"
+			},
+			{
+				"name": "signature",
+				"type": "bytes"
+			}
+		],
+		"name": "getUserData",
+		"outputs": [
+			{
+				"name": "email",
+				"type": "bytes32"
+			},
+			{
+				"name": "phone",
+				"type": "bytes32"
+			},
+			{
+				"name": "perAddr",
+				"type": "bytes32"
+			},
+			{
+				"name": "country",
+				"type": "bytes32"
+			},
+			{
+				"name": "name",
+				"type": "bytes32"
+			},
+			{
+				"name": "dob",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
 	}
 ]
