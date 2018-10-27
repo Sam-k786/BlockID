@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    var sign,msgParams;
     if (typeof web3 !== 'undefined') {
         // Use Mist/MetaMask's provider
         web3 = new Web3(web3.currentProvider);
@@ -79,11 +78,14 @@ $(document).ready(function(){
         if(password!='' && password2!='') {
             if(password == password2) {
                 $('#password_error').hide();
+                password_error = false;
             }
             else {
                 $('#password_error').html("Passwords do not match");
                 $('#password_error').show();
                 password_error=true;
+                var password = $('#password').val('');
+                var password2 = $('#password2').val('');
             }
         }
 
@@ -123,89 +125,70 @@ $(document).ready(function(){
         var account_add = $('#account_add').val();
         var password = $('#password').val();
         check_password();
-        if(password_error){
-            return;
-        }
-        if(currentSectionIndex==0) {
-            msgParams = [
-                {
-                    type: 'bytes32',      // Any valid solidity type
-                    name: 'Message',     // Any string label you want
-                    value: password
+        if(password_error == false){
+            if(currentSectionIndex == 0) {
+                if(web3.isAddress(account_add)){
+                    var headerSection = $('.steps li').eq(currentSectionIndex);
+                    currentSection.removeClass("is-active").next().addClass("is-active");
+                    headerSection.removeClass("is-active").next().addClass("is-active");
                 }
-            ]
-            var params = [msgParams, account_add]
-            var method = 'eth_signTypedData'
-            web3.currentProvider.sendAsync({
-                method,
-                params,
-                account_add
-            }, function (err, result) {
-                if (err) return console.error(err)
-                if (result.error) return console.error(result.error)
-                sign = result.result;
-            });
-            var headerSection = $('.steps li').eq(currentSectionIndex);
-            currentSection.removeClass("is-active").next().addClass("is-active");
-            headerSection.removeClass("is-active").next().addClass("is-active");
-        }
-        else {
-            var headerSection = $('.steps li').eq(currentSectionIndex);
-            currentSection.removeClass("is-active").next().addClass("is-active");
-            headerSection.removeClass("is-active").next().addClass("is-active");
-            if(currentSectionIndex==1) {
-                $('.submit').click(function() {
-                    email_error=false;
-                    password_error=false;
-                    phone_error=false;
-                    check_email();
-                    check_password();
-                    check_phone();
-                    check_country();
-                    if(!name_error & !email_error && !password_error && !phone_error && !country_error) {
-                        var account_add = $('#account_add').val();
-                        var name  = $('#name').val();
-                        var email = $('#email').val();
-                        var password = $('#password').val();
-                        var phone = $('#phone').val();
-                        var country = $('#country').val();
-                        var fingerprint = $('#fingerprint').val();
-                        var dob = $('#dob').val();
-                        var perAddr = $('#address').val();
-                        var finalResult = {
-                            signature : sign,
-                            address:account_add,
-                            password:password,
-                            fingerprint: fingerprint,
-                            email:email,
-                            phone:phone,
-                            perAddr:perAddr,
-                            country:country,
-                            name:name,
-                            dob:dob,
-                            msgParams:msgParams
-
-                        };
-                        $.ajax({
-                            type:"POST",
-                            url:"http://localhost:3000/signup",
-                            data:finalResult,
-                            success: function(res){
-                                if(res.status === 'success'){
-                                    alert(res.message);
-                                    location.reload(true);
-                                }else{
-                                    alert(res.message);
-                                }
-                            },
-                            error: function(err){
-                                alert('Some error occured.Please try again.');
-                                location.reload(true);
-                            }
-                        });
-                    }
-                });
+                else{
+                    alert('This account address is not valid.');
+                }
             }
+        }
+    });
+    $('#next').click(function(){
+        password_error = false;
+        check_password();
+    });
+    $('#submit').click(function() {
+        email_error=false;
+        password_error=false;
+        phone_error=false;
+        check_email();
+        check_password();
+        check_phone();
+        check_country();
+        if(!name_error & !email_error && !password_error && !phone_error && !country_error) {
+            var account_add = $('#account_add').val();
+            var name  = $('#name').val();
+            var email = $('#email').val();
+            var password = $('#password').val();
+            var phone = $('#phone').val();
+            var country = $('#country').val();
+            var fingerprint = $('#fingerprint').val();
+            var dob = $('#dob').val();
+            var perAddr = $('#address').val();
+            var finalResult = {
+                address:account_add,
+                password:password,
+                fingerprint: fingerprint,
+                email:email,
+                phone:phone,
+                perAddr:perAddr,
+                country:country,
+                name:name,
+                dob:dob
+            };
+            $.ajax({
+                type:"POST",
+                url:"http://localhost:3000/api/signup",
+                data:finalResult,
+                success: function(res){
+                    if(res.status === 'success'){
+                        alert(res.message);
+                        location.reload(true);
+                    }else{
+                        alert(res.message);
+                        location.reload(true);
+                    }
+                },
+                error: function(err){
+                    alert('Some error occured.Please try again.');
+                    location.reload(true);
+                }
+            });
         }
     });
 });
